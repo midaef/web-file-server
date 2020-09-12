@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>&title&</title>
+</head>
+<body>
+	<div class="path">&path&</div>
+	<h3></h3>
+	<table>
+		<thead>
+			<tr>
+				<th></th>
+				<th>Size</th>
+				<th>Name</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr><th colspan="3"><hr></th></tr>
+			<tr><td></td><td></td><td><img src="&back-link-src&">&back-link&</td></tr>
+			&file&
+		</tbody>
+	</table>
+	<script type="text/javascript">
+		window.onload = function() {
+			var i, list = document.getElementsByClassName("open-dir");
+			for (i = 0; i < list.length; ++i) {
+				list[i].addEventListener('click', function() {
+					dirName = this.innerHTML;
+					var xmlHttp = new XMLHttpRequest();
+					var currentLocation = window.location.href;
+					currentLocation = currentLocation + "?dir=" + dirName;
+					window.location.href = currentLocation;
+				}, false);
+			}
+		};
+		function toDir() {window.history.back(1);}
+		function downloadFile(file) {
+			var fileName = file;
+			var xmlHttp = new XMLHttpRequest();
+			var currentLocation = window.location.href;
+			currentLocation = currentLocation + "?download=" + fileName;
+			window.location.href = currentLocation;
+		}
+	</script>
+	<style type="text/css">
+		.path h3 {
+			color: #2c3136;
+			margin-left: 50px;
+			font-size: 25px;
+		}
+		
+		table {
+			border-collapse: collapse;
+			text-decoration: none;
+			margin-left: 50px;
+		}
+		a {
+			text-decoration: none;
+			font-size: 20px;
+		}
+		.button-up {margin-left: 50px;}
+		a:hover {color: black;}
+		td {padding-left: 15px;}
+		th {cursor: pointer;}
+	</style>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Login</title>
+		 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css">
+		 <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+	</head>
+	<body>
+		<h2 id="title" class="animated pulse">Web file server</h2>
+		<div class="form animated slideInDown">
+			<h3 class="animated slideInLeft">Login:</h3>
+			<input type='text' name="login" id="login" class="animated slideInRight">
+			<h3 class="animated slideInLeft">Password:</h3>
+			<input type='password' name="pass" id="password" class="animated slideInRight">
+			<div class="animated slideInDown"><button id="entry">Entry</button></div>
+		</div>
+		<h3 id="github" class="animated fadeIn"><a href="https://github.com/midaef/web-file-server">project on GitHub</a></h3>
+		<script type="text/javascript">
+			document.getElementById('entry').onclick = function entry(){
+				var login = document.getElementById('login').value;
+				console.log(login)
+				var password = document.getElementById('password').value;
+				console.log(password)
+				var xmlHttp = new XMLHttpRequest();
+				var currentLocation = window.location.href;
+				currentLocation = currentLocation + "?entry=" + login + "/" + password;
+				window.location.href = currentLocation + "/";
+			}
+		</script>
+		<style type="text/css">
+			body {
+				font-family: 'Raleway', sans-serif;
+			}
+			.form {
+				text-align: center;
+				width: 240px;
+				margin: 0 auto;
+				background-color: #DBE9E5;
+				padding-bottom: 20px;
+				padding-top: 10px;
+			}
+			#login, #password {
+				background-color: #ffe;
+				color: #930;
+			}
+			#entry {
+				margin-top: 20px;
+				vertical-align: center;
+			}
+			#title {text-align: center;}
+			#github {
+				text-align: center;
+				text-decoration: none;
+			}
+			a {text-decoration: none;} 
+		</style>
+	</body>
+</html>

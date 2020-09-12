@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+<body>
+	<div class="button">
+		<button id="download">Download</button>
+		<input type="button" value="UP" onclick="toDir()" class="button-up">
+	</div>
+	<div class="img"><img id="pic" src="&src&" width="&width&px" height="&height&px" /></div>
+	<script type="text/javascript">
+		document.getElementById('download').onclick = function download() {
+			var url = window.location.href;
+			let data = url.split("/");
+			var myFile = data[data.length-1].replace("?dir=", "");
+			var xmlHttp = new XMLHttpRequest();
+			var currentLocation = window.location.href;
+			currentLocation = currentLocation + "?download=" + myFile;
+			window.location.href = currentLocation;
+		}
+		function toDir() {window.history.back(1);}
+	</script>
+	<style type="text/css">
+		.button {
+
+		}
+	</style>
+</body>
+</html>

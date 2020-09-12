@@ -1,0 +1,6 @@
+{
+    "host":"localhost",
+    "port":":65000",
+    "password":"12345678",
+    "log_level":"debug"
+}
