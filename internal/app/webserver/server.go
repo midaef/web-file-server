@@ -1,8 +1,11 @@
 package webserver
 
 import (
+	"encoding/json"
 	"html/template"
+	"io/ioutil"
 	"net/http"
+	"packages/internal/app/models"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
@@ -11,16 +14,18 @@ import (
 )
 
 type webServer struct {
-	router *mux.Router
-	logger *zap.Logger
-	config *Config
+	router   *mux.Router
+	logger   *zap.Logger
+	config   *Config
+	sessions *models.UsersStorage
 }
 
 func newServer(c *Config) *webServer {
 	return &webServer{
-		router: mux.NewRouter(),
-		logger: NewLogger(c.LogLevel),
-		config: c,
+		router:   mux.NewRouter(),
+		logger:   NewLogger(c.LogLevel),
+		config:   c,
+		sessions: models.NewUsersStorage(),
 	}
 }
 
@@ -43,6 +48,7 @@ func (server *webServer) routers() {
 	server.router.PathPrefix("../resources/static/").Handler(http.StripPrefix("../resources/static/", http.FileServer(http.Dir(".././resources/static/"))))
 	server.router.Handle("/", server.index())
 	server.router.Handle("/login", server.login())
+	server.router.Handle("/auth", server.login()).Methods("POST")
 }
 
 func (server *webServer) index() http.Handler {
@@ -61,9 +67,29 @@ func (server *webServer) login() http.Handler {
 	})
 }
 
+func (server *webServer) requestReader(r *http.Request) []byte {
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		server.logger.Error("Request reader error", zap.Error(err))
+	}
+	return body
+}
+
+func (server *webServer) responseWriter(statusCode int, data interface{}, w http.ResponseWriter) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(statusCode)
+	json, err := json.Marshal(data)
+	if err != nil {
+		server.logger.Error("Json marshal error", zap.Error(err))
+	}
+	_, err = w.Write(json)
+	if err != nil {
+		server.logger.Error("Response writer error", zap.Error(err))
+	}
+}
+
 func (server *webServer) templateError(err error) {
 	if err != nil {
-		server.logger.Error("Template error",
-			zap.Error(err))
+		server.logger.Error("Template error", zap.Error(err))
 	}
 }
