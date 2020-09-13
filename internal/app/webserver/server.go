@@ -17,7 +17,7 @@ type webServer struct {
 	router   *mux.Router
 	logger   *zap.Logger
 	config   *Config
-	sessions *models.UsersStorage
+	sessions *models.Sessions
 }
 
 func newServer(c *Config) *webServer {
@@ -25,7 +25,7 @@ func newServer(c *Config) *webServer {
 		router:   mux.NewRouter(),
 		logger:   NewLogger(c.LogLevel),
 		config:   c,
-		sessions: models.NewUsersStorage(),
+		sessions: models.NewSessions(),
 	}
 }
 

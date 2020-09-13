@@ -52,7 +52,7 @@ func TestHandleUserAuth(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			rec := httptest.NewRecorder()
 			jsonTest, _ := json.Marshal(test.payload)
-			req, _ := http.NewRequest("POST", "/register", bytes.NewBuffer(jsonTest))
+			req, _ := http.NewRequest("POST", "/auth", bytes.NewBuffer(jsonTest))
 			req.Header.Set("Content-Type", "application/json")
 			handler := http.HandlerFunc(s.auth().ServeHTTP)
 			handler.ServeHTTP(rec, req)

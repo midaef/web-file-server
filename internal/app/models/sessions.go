@@ -4,8 +4,8 @@ import (
 	"sync"
 )
 
-// UsersStorage ...
-type UsersStorage struct {
+// Sessions ...
+type Sessions struct {
 	usersMutex *sync.Mutex
 	Users      map[string]*User
 }
@@ -16,19 +16,19 @@ type User struct {
 	Password string `json:"password"`
 }
 
-// NewUsersStorage ...
-func NewUsersStorage() *UsersStorage {
-	return &UsersStorage{
+// NewSessions ...
+func NewSessions() *Sessions {
+	return &Sessions{
 		usersMutex: new(sync.Mutex),
 		Users:      make(map[string]*User),
 	}
 }
 
 // Write ...
-func (usersStorage *UsersStorage) Write(user *User) string {
-	usersStorage.usersMutex.Lock()
-	defer usersStorage.usersMutex.Unlock()
+func (sessions *Sessions) Write(user *User) string {
+	sessions.usersMutex.Lock()
+	defer sessions.usersMutex.Unlock()
 	token := GenerateToken()
-	usersStorage.Users[token] = user
+	sessions.Users[token] = user
 	return token
 }
