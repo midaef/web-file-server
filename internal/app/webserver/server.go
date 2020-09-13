@@ -48,14 +48,39 @@ func (server *webServer) routers() {
 	server.router.PathPrefix("../resources/static/").Handler(http.StripPrefix("../resources/static/", http.FileServer(http.Dir(".././resources/static/"))))
 	server.router.Handle("/", server.index())
 	server.router.Handle("/login", server.login())
-	server.router.Handle("/auth", server.login()).Methods("POST")
+	server.router.Handle("/auth", server.auth()).Methods("POST")
+}
+
+func (server *webServer) auth() http.Handler {
+	var user *models.User
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		bytes := server.requestReader(r)
+		err := json.Unmarshal(bytes, &user)
+		if err != nil {
+			server.logger.Error("Unmarshal error", zap.Error(err))
+			server.responseWriter(500, map[string]interface{}{"status": "Internal server error"}, w)
+		} else {
+			token := server.sessions.Write(user)
+			server.responseWriter(200, &models.Token{Token: token}, w)
+		}
+	})
 }
 
 func (server *webServer) index() http.Handler {
+	var token *models.Token
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		tmpl, err := template.ParseFiles("../../resources/templates/index.html")
-		server.templateError(err)
-		tmpl.Execute(w, nil)
+		bytes := server.requestReader(r)
+		err := json.Unmarshal(bytes, &token)
+		if err != nil {
+			server.logger.Error("Unmarshal error", zap.Error(err))
+		} else {
+			if _, ok := server.sessions.Users[token.Token]; ok {
+				tmpl, err := template.ParseFiles("../../resources/templates/index.html")
+				server.templateError(err)
+				tmpl.Execute(w, nil)
+			}
+		}
+		http.Redirect(w, r, "/login", http.StatusTemporaryRedirect)
 	})
 }
 

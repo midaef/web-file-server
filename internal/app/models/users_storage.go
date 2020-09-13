@@ -25,9 +25,10 @@ func NewUsersStorage() *UsersStorage {
 }
 
 // Write ...
-func (usersStorage *UsersStorage) Write(user *User) {
+func (usersStorage *UsersStorage) Write(user *User) string {
 	usersStorage.usersMutex.Lock()
 	defer usersStorage.usersMutex.Unlock()
 	token := GenerateToken()
 	usersStorage.Users[token] = user
+	return token
 }
