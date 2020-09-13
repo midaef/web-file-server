@@ -60,8 +60,12 @@ func (server *webServer) auth() http.Handler {
 			server.logger.Error("Unmarshal error", zap.Error(err))
 			server.responseWriter(500, map[string]interface{}{"status": "Internal server error"}, w)
 		} else {
-			token := server.sessions.Write(user)
-			server.responseWriter(200, &models.Token{Token: token}, w)
+			if user.Password == server.config.Password {
+				token := server.sessions.Write(user)
+				server.responseWriter(200, &models.Token{Token: token}, w)
+			} else {
+				server.responseWriter(400, map[string]interface{}{"status": "Bad request"}, w)
+			}
 		}
 	})
 }
