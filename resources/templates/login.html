@@ -6,6 +6,14 @@
 		 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css">
 		 <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
 	</head>
+	<script type="text/javascript">
+		let tokenCookie = document.cookie.replace(/(?:(?:^|.*;\s*)token\s*\=\s*([^;]*).*$)|^.*$/, "$1")
+		window.onload = function() {
+			if (tokenCookie != "") {
+				location.replace("/");
+			}
+		}
+	</script>
 	<body>
 		<h2 id="title" class="animated pulse">Web file server</h2>
 		<div class="form animated slideInDown">
@@ -16,18 +24,6 @@
 			<div class="animated slideInDown"><button id="entry">Entry</button></div>
 		</div>
 		<h3 id="github" class="animated fadeIn"><a href="https://github.com/midaef/web-file-server">project on GitHub</a></h3>
-		<script type="text/javascript">
-			document.getElementById('entry').onclick = function entry(){
-				var login = document.getElementById('login').value;
-				console.log(login)
-				var password = document.getElementById('password').value;
-				console.log(password)
-				var xmlHttp = new XMLHttpRequest();
-				var currentLocation = window.location.href;
-				currentLocation = currentLocation + "?entry=" + login + "/" + password;
-				window.location.href = currentLocation + "/";
-			}
-		</script>
 		<style type="text/css">
 			body {
 				font-family: 'Raleway', sans-serif;
@@ -56,4 +52,25 @@
 			a {text-decoration: none;} 
 		</style>
 	</body>
+	<script type="text/javascript">
+		let token = ""
+		document.getElementById('entry').onclick = function entry(){
+			var login = document.getElementById('login').value
+			var password = document.getElementById('password').value
+			let xhr = new XMLHttpRequest()
+			xhr.open("POST", "/auth", false)
+			xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
+			let body = JSON.stringify({
+				login:login,
+				password:password
+			})
+			xhr.send(body)
+			let t = JSON.parse(xhr.response).token
+			console.log(xhr.status)
+			if (xhr.status == 200) {
+				document.cookie = "token=" + t + ";"
+				location.replace("/");
+			}
+		}
+	</script>
 </html>
