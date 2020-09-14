@@ -91,7 +91,7 @@ func (server *webServer) token() http.Handler {
 			if _, ok := server.sessions.Users[token.Token]; ok {
 				server.responseWriter(200, map[string]interface{}{"status": "OK"}, w)
 			} else {
-				server.responseWriter(404, map[string]interface{}{"status": "Bad request"}, w)
+				server.responseWriter(400, map[string]interface{}{"status": "Bad request"}, w)
 			}
 		}
 	})
