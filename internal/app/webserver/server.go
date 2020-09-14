@@ -49,6 +49,7 @@ func (server *webServer) routers() {
 	server.router.Handle("/", server.index())
 	server.router.Handle("/login", server.login())
 	server.router.Handle("/auth", server.auth()).Methods("POST")
+	server.router.Handle("/token", server.token()).Methods("POST")
 }
 
 func (server *webServer) auth() http.Handler {
@@ -71,20 +72,28 @@ func (server *webServer) auth() http.Handler {
 }
 
 func (server *webServer) index() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		tmpl, err := template.ParseFiles("../../resources/templates/index.html")
+		server.templateError(err)
+		tmpl.Execute(w, nil)
+	})
+}
+
+func (server *webServer) token() http.Handler {
 	var token *models.Token
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		bytes := server.requestReader(r)
 		err := json.Unmarshal(bytes, &token)
 		if err != nil {
 			server.logger.Error("Unmarshal error", zap.Error(err))
+			server.responseWriter(500, map[string]interface{}{"status": "Internal server error"}, w)
 		} else {
 			if _, ok := server.sessions.Users[token.Token]; ok {
-				tmpl, err := template.ParseFiles("../../resources/templates/index.html")
-				server.templateError(err)
-				tmpl.Execute(w, nil)
+				server.responseWriter(200, map[string]interface{}{"status": "OK"}, w)
+			} else {
+				server.responseWriter(404, map[string]interface{}{"status": "Bad request"}, w)
 			}
 		}
-		http.Redirect(w, r, "/login", http.StatusTemporaryRedirect)
 	})
 }
 
