@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"packages/internal/app/models"
+	"packages/internal/app/parser"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
@@ -50,6 +51,31 @@ func (server *webServer) routers() {
 	server.router.Handle("/login", server.login())
 	server.router.Handle("/auth", server.auth()).Methods("POST")
 	server.router.Handle("/token", server.token()).Methods("POST")
+	server.router.Handle("/read", server.read()).Methods("POST")
+}
+
+func (server *webServer) read() http.Handler {
+	type Request struct {
+		Token string `json:"token"`
+		Path  string `json:"path"`
+	}
+	var req *Request
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		bytes := server.requestReader(r)
+		err := json.Unmarshal(bytes, &req)
+		if err != nil {
+			server.logger.Error("Unmarshal error", zap.Error(err))
+			server.responseWriter(500, map[string]interface{}{"status": "Internal server error"}, w)
+		} else {
+			if _, ok := server.sessions.Users[req.Token]; ok {
+				parser := parser.NewParser()
+				parser.Read(req.Path, req.Token)
+				server.responseWriter(200, map[string]interface{}{"files": parser.Files[req.Token]}, w)
+			} else {
+				server.responseWriter(400, map[string]interface{}{"status": "Bad request"}, w)
+			}
+		}
+	})
 }
 
 func (server *webServer) auth() http.Handler {
