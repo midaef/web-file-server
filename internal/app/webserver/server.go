@@ -52,6 +52,11 @@ func (server *webServer) routers() {
 	server.router.Handle("/auth", server.auth()).Methods("POST")
 	server.router.Handle("/token", server.token()).Methods("POST")
 	server.router.Handle("/read", server.read()).Methods("POST")
+	server.router.Handle("/load-img", server.loadImg()).Methods()
+}
+
+func (server *webServer) loadImg() {
+	
 }
 
 func (server *webServer) read() http.Handler {

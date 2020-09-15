@@ -32,3 +32,15 @@ func (sessions *Sessions) Write(user *User) string {
 	sessions.Users[token] = user
 	return token
 }
+
+// Read ...
+func (sessions *Sessions) Read(user *User) string {
+	sessions.usersMutex.Lock()
+	defer sessions.usersMutex.Unlock()
+	for k, v := range sessions.Users {
+		if v == user {
+			return k
+		}
+	}
+	return ""
+}
