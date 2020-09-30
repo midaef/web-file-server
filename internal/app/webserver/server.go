@@ -55,8 +55,10 @@ func (server *webServer) routers() {
 	server.router.Handle("/load-img", server.loadImg()).Methods()
 }
 
-func (server *webServer) loadImg() {
-	
+func (server *webServer) loadImg() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+	})
 }
 
 func (server *webServer) read() http.Handler {
